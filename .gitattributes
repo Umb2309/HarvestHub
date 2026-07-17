@@ -1,0 +1,28 @@
+# ── Normalise line endings ───────────────────────────────────
+# All text files: store as LF in the repo, check out as native on each OS
+* text=auto eol=lf
+
+# Force LF on these files even on Windows
+*.jsx    text eol=lf
+*.js     text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.css    text eol=lf
+*.html   text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.svg    text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+
+# Binary files — do not touch line endings
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.eot    binary
+*.webp   binary

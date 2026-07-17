@@ -1,0 +1,15 @@
+/* ============================================================
+   Layout Component Styles
+   ============================================================ */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout__main {
+  flex: 1;
+  /* Removes default focus ring when tabbing to #main-content via skip link */
+  outline: none;
+}
