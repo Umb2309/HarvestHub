@@ -17,6 +17,8 @@
  * If the parent doesn't pass a `size` prop, it defaults to 'md'.
  */
 
+import './StarRating.css';
+
 export default function StarRating({ rating, reviewCount, size = 'md' }) {
   // Math.round(rating * 2) / 2  → rounds to nearest 0.5
   // e.g. 4.76 → 4.5,  4.82 → 5.0
@@ -56,3 +58,4 @@ export default function StarRating({ rating, reviewCount, size = 'md' }) {
     </div>
   );
 }
+

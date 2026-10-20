@@ -1,61 +1,54 @@
 /**
- * FarmerCard Component
- * ---------------------
- * Displays a farmer profile in a card layout.
- * Used on: Home page (spotlight), Farmers page.
+ * FarmerCard
+ * -----------
+ * A farmer profile summary. Used on Home (spotlight) and the Farmers page.
  *
  * Props:
- *   farmer {object} — a farmer object from src/data/farmers.js
+ *   farmer {object} — a farmer from src/data/farmers.js
  */
 
-import { Link }     from 'react-router-dom';
-import StarRating   from '../ui/StarRating';
+import { Link } from 'react-router-dom';
+import StarRating from '../ui/StarRating';
+import SmartImage from '../ui/SmartImage';
+import Icon from '../ui/Icon';
+import { initials } from '../../utils/format';
 import './FarmerCard.css';
 
 export default function FarmerCard({ farmer }) {
-  const { id, name, farm, location, avatar, coverImage, specialties, rating, reviewCount, productCount, yearsActive } = farmer;
+  const { id, name, farm, location, avatar, coverImage, specialties, rating, reviewCount, productCount, yearsActive, quote } = farmer;
 
   return (
-    <Link to={`/farmers/${id}`} className="farmer-card card" aria-label={`View ${name}'s profile`}>
-
-      {/* Cover image strip at the top */}
+    <Link to={`/farmers/${id}`} className="farmer-card card" aria-label={`${name}, ${farm} — view profile`}>
       <div className="farmer-card__cover">
-        <img src={coverImage} alt={`${farm} farm`} className="farmer-card__cover-img" loading="lazy" />
-        {/* Green gradient overlay so the avatar stays readable */}
+        <SmartImage src={coverImage} alt="" className="farmer-card__cover-img" loading="lazy" fallback="" />
         <div className="farmer-card__cover-overlay" aria-hidden="true" />
       </div>
 
-      {/* Avatar — positioned to overlap the cover image */}
       <div className="farmer-card__avatar-wrap">
-        <img src={avatar} alt={name} className="farmer-card__avatar" />
+        <SmartImage src={avatar} alt="" className="farmer-card__avatar" variant="avatar" fallback={initials(name)} />
       </div>
 
-      {/* Body content */}
       <div className="farmer-card__body">
-        <h3 className="farmer-card__name">{name}</h3>
-        <p className="farmer-card__farm">{farm}</p>
+        <div>
+          <h3 className="farmer-card__name">{name}</h3>
+          <p className="farmer-card__farm">{farm}</p>
+        </div>
 
         <p className="farmer-card__location">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
+          <Icon name="pin" size={13} strokeWidth={2.2} />
           {location}
         </p>
 
-        {/* Specialties — rendered as small badge pills */}
-        {/* 🎓 CONCEPT — .map() to render a list */}
-        {/* .map() transforms each array item into a JSX element. */}
-        {/* The `key` prop is REQUIRED — React uses it to track list items efficiently. */}
+        {quote && <p className="farmer-card__quote">“{quote}”</p>}
+
         <div className="farmer-card__specialties">
-          {specialties.slice(0, 2).map((spec) => (
+          {specialties.slice(0, 3).map((spec) => (
             <span key={spec} className="badge badge-primary">{spec}</span>
           ))}
         </div>
 
         <StarRating rating={rating} reviewCount={reviewCount} size="sm" />
 
-        {/* Stats row */}
         <div className="farmer-card__stats">
           <div className="farmer-card__stat">
             <span className="farmer-card__stat-value">{productCount}</span>
@@ -64,7 +57,7 @@ export default function FarmerCard({ farmer }) {
           <div className="farmer-card__stat-divider" aria-hidden="true" />
           <div className="farmer-card__stat">
             <span className="farmer-card__stat-value">{yearsActive}</span>
-            <span className="farmer-card__stat-label">Years</span>
+            <span className="farmer-card__stat-label">Years farming</span>
           </div>
           <div className="farmer-card__stat-divider" aria-hidden="true" />
           <div className="farmer-card__stat">

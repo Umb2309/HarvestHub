@@ -2,7 +2,8 @@ import { createContext, useContext, useReducer, useEffect } from 'react';
 
 const CartContext = createContext(null);
 
-const STORAGE_KEY = 'harvesthub_cart';
+// v2: prices moved to Naira — the new key ignores old dollar-priced carts
+const STORAGE_KEY = 'harvesthub_cart_v2';
 
 // ── Reducer ────────────────────────────────────────────────
 function cartReducer(state, action) {
@@ -40,33 +41,36 @@ function cartReducer(state, action) {
     case 'CLEAR_CART':
       return { ...state, items: [] };
 
-    case 'LOAD_CART':
-      return { ...state, items: action.payload };
-
     default:
       return state;
   }
 }
 
 // ── Provider ───────────────────────────────────────────────
-export function CartProvider({ children }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] });
+/** Reads the saved cart once, before the first render */
+function loadInitialCart() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const items = stored ? JSON.parse(stored) : [];
+    return { items: Array.isArray(items) ? items : [] };
+  } catch {
+    return { items: [] };
+  }
+}
 
-  // Hydrate from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        dispatch({ type: 'LOAD_CART', payload: JSON.parse(stored) });
-      }
-    } catch {
-      // ignore parse errors
-    }
-  }, []);
+export function CartProvider({ children }) {
+  // 🎓 The third argument to useReducer is a lazy initialiser: it runs once,
+  // so the saved cart is in state from the very first render. Loading it in a
+  // useEffect instead lets the "save" effect overwrite storage with [] first.
+  const [state, dispatch] = useReducer(cartReducer, undefined, loadInitialCart);
 
   // Persist to localStorage on every change
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+    } catch {
+      // storage full or blocked (private mode) — the cart still works in memory
+    }
   }, [state.items]);
 
   // Derived values
@@ -102,3 +106,4 @@ export function useCart() {
   if (!ctx) throw new Error('useCart must be used inside <CartProvider>');
   return ctx;
 }
+

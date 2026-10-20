@@ -1,0 +1,219 @@
+/* ============================================================
+   Farmer Profile Page
+   ============================================================ */
+
+.farmer-profile__hero {
+  position: relative;
+  height: 260px;
+  background: var(--color-primary-dark);
+  overflow: hidden;
+}
+
+.farmer-profile__hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.farmer-profile__hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(27, 67, 50, 0.75) 0%, rgba(27, 67, 50, 0.35) 100%);
+}
+
+.farmer-profile__hero-inner {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--space-6);
+}
+
+/* ── Layout ── */
+.farmer-profile__main {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: var(--space-8);
+  margin-top: -140px;
+  padding-bottom: var(--space-16);
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Sidebar card ── */
+.farmer-profile__card {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-4));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.farmer-profile__avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--color-surface);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-4);
+}
+
+.farmer-profile__name {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-black);
+}
+
+.farmer-profile__farm {
+  font-weight: var(--font-semi);
+  color: var(--color-primary);
+  margin-top: 2px;
+}
+
+.farmer-profile__location {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-block: var(--space-2) var(--space-3);
+}
+
+.farmer-profile__rating { margin-bottom: var(--space-5); }
+
+.farmer-profile__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  padding-block: var(--space-4);
+  border-block: 1px solid var(--color-border-light);
+}
+
+.farmer-profile__stats div {
+  display: flex;
+  flex-direction: column;
+}
+
+.farmer-profile__stats div + div { border-left: 1px solid var(--color-border-light); }
+
+.farmer-profile__stats strong {
+  font-size: var(--text-xl);
+  color: var(--color-primary-dark);
+}
+
+.farmer-profile__stats span {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.farmer-profile__details {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-block: var(--space-5) var(--space-6);
+}
+
+.farmer-profile__details dt {
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.farmer-profile__details dd {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.farmer-profile__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ── Content ── */
+.farmer-profile__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+  min-width: 0;
+}
+
+.farmer-profile__story {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+
+.farmer-profile__heading {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-black);
+  margin-bottom: var(--space-4);
+}
+
+.farmer-profile__products .farmer-profile__heading { color: var(--color-text); }
+
+.farmer-profile__bio {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.farmer-profile__quote {
+  margin-top: var(--space-6);
+  padding: var(--space-5) var(--space-6);
+  border-left: 4px solid var(--color-accent);
+  background: var(--color-earth-50);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.farmer-profile__quote p {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.farmer-profile__quote footer {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-earth);
+  font-weight: var(--font-semi);
+}
+
+.farmer-profile__products { scroll-margin-top: calc(var(--nav-height) + var(--space-4)); }
+
+.farmer-profile__products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-5);
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+  .farmer-profile__hero { height: 200px; }
+  .farmer-profile__main {
+    grid-template-columns: 1fr;
+    margin-top: -90px;
+    gap: var(--space-6);
+  }
+  .farmer-profile__card { position: static; }
+  .farmer-profile__details { max-width: 480px; }
+}
+
+@media (max-width: 560px) {
+  .farmer-profile__story { padding: var(--space-6) var(--space-5); }
+}

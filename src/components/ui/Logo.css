@@ -1,0 +1,36 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.logo__mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: #fff;
+  transform: rotate(-6deg);
+  transition: transform var(--transition-base);
+}
+
+.logo:hover .logo__mark { transform: rotate(0deg); }
+
+.logo__text {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: var(--font-black);
+  letter-spacing: -0.02em;
+  color: var(--color-primary-dark);
+}
+
+.logo--light .logo__mark {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.logo--light .logo__text { color: #fff; }

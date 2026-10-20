@@ -1,209 +1,139 @@
 /**
  * Products Page
  * --------------
- * Full product browsing experience with:
- *  - Search bar (filters by name/farmer)
- *  - Category filter sidebar
- *  - Sort dropdown (price, name, rating)
- *  - Skeleton loading state
- *  - Product grid (reuses ProductCard)
- *  - Empty state
- *  - Results count
+ * Search, category + state filters, sorting, skeleton loading and an empty state.
  *
- * 🎓 NEW REACT HOOKS used here:
- *
- * useEffect(fn, [deps])
- *   Runs `fn` after the component renders.
- *   The [deps] array controls WHEN it re-runs:
- *   - []    → run once (on mount only) — like "componentDidMount"
- *   - [x]   → re-run whenever x changes
- *   - none  → re-run after every render (avoid this!)
- *   We use it to simulate a loading delay (real apps: fetch API here).
- *
- * useMemo(fn, [deps])
- *   Caches the result of `fn` and only recalculates when [deps] change.
- *   We use it so filtering/sorting doesn't re-run on every keystroke
- *   unless the relevant state actually changed. Great for performance.
+ * 🎓 Hooks used here:
+ * useEffect(fn, [])  — runs once after mount. We fake an API delay with it;
+ *                      a real app would fetch('/api/products') here.
+ * useMemo(fn, deps)  — caches the filtered/sorted list and only recalculates
+ *                      when one of the deps changes.
  */
 
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { PRODUCTS, CATEGORIES } from '../data/products';
+import { FARMERS, FARMER_STATES } from '../data/farmers';
 import ProductCard from '../components/product/ProductCard';
 import { SkeletonGrid } from '../components/ui/SkeletonCard';
+import Icon from '../components/ui/Icon';
 import './Products.css';
 
-/* ── Sort options ── */
 const SORT_OPTIONS = [
-  { value: 'featured',   label: 'Featured'       },
-  { value: 'price-asc',  label: 'Price: Low → High' },
-  { value: 'price-desc', label: 'Price: High → Low' },
-  { value: 'rating',     label: 'Highest Rated'   },
-  { value: 'name',       label: 'Name A → Z'      },
+  { value: 'featured',   label: 'Featured'           },
+  { value: 'price-asc',  label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+  { value: 'rating',     label: 'Highest rated'      },
+  { value: 'name',       label: 'Name: A to Z'       },
 ];
 
+const stateOf = (product) => FARMERS.find((f) => f.id === product.farmerId)?.state;
+
 export default function Products() {
-  // ── State ──────────────────────────────────────────────
   const [searchQuery,      setSearchQuery]      = useState('');
   const [activeCategory,   setActiveCategory]   = useState('all');
+  const [activeState,      setActiveState]      = useState('all');
+  const [inStockOnly,      setInStockOnly]      = useState(false);
   const [sortBy,           setSortBy]           = useState('featured');
   const [isLoading,        setIsLoading]        = useState(true);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
 
-  // 🎓 useEffect — Simulates an API fetch delay on page mount
-  // In a real app, this is where you'd write:
-  //   const res = await fetch('/api/products');
-  //   const data = await res.json();
-  //   setProducts(data);
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 900); // 900ms fake delay
-    // Cleanup function — cancels the timer if the component unmounts before it fires
-    // This prevents memory leaks (a common React mistake to avoid!)
-    return () => clearTimeout(timer);
-  }, []); // [] means: run once, when the component first appears on screen
+    window.scrollTo({ top: 0 });
+    const timer = setTimeout(() => setIsLoading(false), 600); // fake network delay
+    return () => clearTimeout(timer); // cleanup if we leave before it fires
+  }, []);
 
-  // 🎓 useMemo — filtered + sorted product list
-  // Only recalculates when searchQuery, activeCategory, or sortBy changes.
-  // Without useMemo, this would re-run on every render (even unrelated ones).
   const filteredProducts = useMemo(() => {
-    let result = [...PRODUCTS];
+    const q = searchQuery.trim().toLowerCase();
 
-    // 1. Filter by category
-    if (activeCategory !== 'all') {
-      result = result.filter((p) => p.category === activeCategory);
-    }
+    const result = PRODUCTS.filter((p) => {
+      if (activeCategory !== 'all' && p.category !== activeCategory) return false;
+      if (activeState !== 'all' && stateOf(p) !== activeState) return false;
+      if (inStockOnly && !p.inStock) return false;
+      if (q && ![p.name, p.farmerName, p.farmerLocation, p.category].some((s) => s.toLowerCase().includes(q))) return false;
+      return true;
+    });
 
-    // 2. Filter by search query (case-insensitive)
-    // .toLowerCase() makes "tomato" match "Tomato", "TOMATO", etc.
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.farmerName.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q)
-      );
-    }
+    const sorters = {
+      'price-asc':  (a, b) => a.price - b.price,
+      'price-desc': (a, b) => b.price - a.price,
+      rating:       (a, b) => b.rating - a.rating,
+      name:         (a, b) => a.name.localeCompare(b.name),
+      // Featured first, then in-stock before sold-out
+      featured:     (a, b) => (b.featured - a.featured) || (b.inStock - a.inStock),
+    };
+    return result.sort(sorters[sortBy]);
+  }, [searchQuery, activeCategory, activeState, inStockOnly, sortBy]);
 
-    // 3. Sort
-    switch (sortBy) {
-      case 'price-asc':
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        result.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'name':
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'featured':
-      default:
-        // Featured first, then rest
-        result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-        break;
-    }
-
-    return result;
-  }, [searchQuery, activeCategory, sortBy]); // recalculate when any of these change
-
-  // Reset to 'all' whenever search clears a category
-  const handleCategoryChange = (catId) => {
-    setActiveCategory(catId);
-    setShowMobileFilter(false);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    // If user types a search, reset category to 'all' for broader results
-    if (e.target.value && activeCategory !== 'all') {
-      setActiveCategory('all');
-    }
-  };
+  const countFor = (catId) =>
+    catId === 'all' ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === catId).length;
 
   const clearFilters = () => {
     setSearchQuery('');
     setActiveCategory('all');
+    setActiveState('all');
+    setInStockOnly(false);
     setSortBy('featured');
   };
 
-  const hasActiveFilters = searchQuery || activeCategory !== 'all' || sortBy !== 'featured';
+  const activeFilters = [
+    activeCategory !== 'all' && { key: 'cat', label: CATEGORIES.find((c) => c.id === activeCategory)?.label, clear: () => setActiveCategory('all') },
+    activeState !== 'all' && { key: 'state', label: `From ${activeState}`, clear: () => setActiveState('all') },
+    inStockOnly && { key: 'stock', label: 'In stock', clear: () => setInStockOnly(false) },
+    searchQuery && { key: 'q', label: `“${searchQuery}”`, clear: () => setSearchQuery('') },
+  ].filter(Boolean);
 
   return (
     <div className="products-page">
-
-      {/* ── Page Header ── */}
-      <div className="products-page__header">
+      <header className="page-header">
         <div className="container">
-          {/* Breadcrumb */}
-          <nav className="breadcrumb" aria-label="Breadcrumb">
+          <nav className="breadcrumb breadcrumb--light" aria-label="Breadcrumb">
             <Link to="/" className="breadcrumb__link">Home</Link>
             <span className="breadcrumb__sep" aria-hidden="true">›</span>
-            <span className="breadcrumb__current" aria-current="page">Products</span>
+            <span className="breadcrumb__current" aria-current="page">Produce</span>
           </nav>
 
-          <div className="products-page__header-content">
+          <div className="page-header__row">
             <div>
-              <h1 className="products-page__title">Fresh Produce</h1>
-              <p className="products-page__subtitle">
-                Seasonal goodness sourced directly from{' '}
-                <strong>{PRODUCTS.length}+</strong> local farmers.
+              <h1 className="page-header__title">Fresh produce</h1>
+              <p className="page-header__subtitle">
+                {PRODUCTS.length} products from {FARMERS.length} farms in {FARMER_STATES.length} states, priced by the farmers.
               </p>
             </div>
 
-            {/* Search bar */}
-            <div className="products-search">
-              <div className="products-search__wrap">
-                <svg className="products-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="m21 21-4.35-4.35"/>
-                </svg>
+            <div className="page-header__search">
+              <div className="input-icon-wrap input-icon-wrap--dark">
+                <Icon name="search" size={18} />
                 <input
-                  id="product-search"
                   type="search"
-                  className="input products-search__input"
-                  placeholder="Search products or farmers…"
+                  className="input input--on-dark"
+                  placeholder="Search tomatoes, yam, Kano…"
                   value={searchQuery}
-                  onChange={handleSearchChange}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Search products"
                   autoComplete="off"
                 />
-                {/* Clear button — only shown when there's a query */}
                 {searchQuery && (
-                  <button
-                    className="products-search__clear"
-                    onClick={() => setSearchQuery('')}
-                    aria-label="Clear search"
-                  >
-                    ✕
+                  <button className="input-icon-wrap__clear" onClick={() => setSearchQuery('')} aria-label="Clear search">
+                    <Icon name="x" size={16} />
                   </button>
                 )}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* ── Main Layout: Sidebar + Grid ── */}
       <div className="container products-layout">
-
-        {/* ── Sidebar ── */}
-        {/* Mobile filter toggle */}
         <button
           className="products-filter-toggle btn btn-outline btn-sm"
           onClick={() => setShowMobileFilter((o) => !o)}
           aria-expanded={showMobileFilter}
           aria-controls="filter-sidebar"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <line x1="4" y1="6" x2="20" y2="6"/>
-            <line x1="8" y1="12" x2="16" y2="12"/>
-            <line x1="11" y1="18" x2="13" y2="18"/>
-          </svg>
-          {showMobileFilter ? 'Hide Filters' : 'Filters'}
+          <Icon name="filter" size={16} />
+          {showMobileFilter ? 'Hide filters' : `Filters${activeFilters.length ? ` (${activeFilters.length})` : ''}`}
         </button>
 
         <aside
@@ -213,53 +143,62 @@ export default function Products() {
         >
           <div className="products-sidebar__section">
             <h2 className="products-sidebar__heading">Category</h2>
-            <ul className="products-sidebar__list" role="listbox" aria-label="Filter by category">
-              {CATEGORIES.map(({ id, label, icon }) => {
-                // Count products in each category for the badge number
-                const count = id === 'all'
-                  ? PRODUCTS.length
-                  : PRODUCTS.filter((p) => p.category === id).length;
-
-                return (
-                  <li key={id} role="option" aria-selected={activeCategory === id}>
-                    <button
-                      className={`products-sidebar__item ${activeCategory === id ? 'products-sidebar__item--active' : ''}`}
-                      onClick={() => handleCategoryChange(id)}
-                    >
-                      <span className="products-sidebar__item-icon" aria-hidden="true">{icon}</span>
-                      <span className="products-sidebar__item-label">{label}</span>
-                      <span className="products-sidebar__item-count">{count}</span>
-                    </button>
-                  </li>
-                );
-              })}
+            <ul className="products-sidebar__list">
+              {CATEGORIES.map(({ id, label }) => (
+                <li key={id}>
+                  <button
+                    className={`products-sidebar__item${activeCategory === id ? ' products-sidebar__item--active' : ''}`}
+                    onClick={() => setActiveCategory(id)}
+                    aria-pressed={activeCategory === id}
+                  >
+                    <span className="products-sidebar__item-label">{label}</span>
+                    <span className="products-sidebar__item-count">{countFor(id)}</span>
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Clear filters button */}
-          {hasActiveFilters && (
-            <button className="btn btn-ghost btn-sm products-sidebar__clear" onClick={clearFilters}>
-              ✕ Clear all filters
+          <div className="products-sidebar__section">
+            <label htmlFor="state-filter" className="products-sidebar__heading">Grown in</label>
+            <select
+              id="state-filter"
+              className="input"
+              value={activeState}
+              onChange={(e) => setActiveState(e.target.value)}
+            >
+              <option value="all">Any state</option>
+              {FARMER_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+
+          <div className="products-sidebar__section">
+            <label className="products-sidebar__check">
+              <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
+              Hide sold-out items
+            </label>
+          </div>
+
+          {activeFilters.length > 0 && (
+            <button className="products-sidebar__clear" onClick={clearFilters}>
+              Clear all filters
             </button>
           )}
         </aside>
 
-        {/* ── Products Column ── */}
         <div className="products-main">
-
-          {/* Toolbar: count + sort */}
           <div className="products-toolbar">
             <p className="products-toolbar__count" aria-live="polite">
               {isLoading
-                ? 'Loading products…'
-                : `${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''} found`}
+                ? 'Loading produce…'
+                : `${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''}`}
             </p>
 
             <div className="products-toolbar__sort">
-              <label htmlFor="sort-select" className="products-toolbar__sort-label">Sort by:</label>
+              <label htmlFor="sort-select" className="products-toolbar__sort-label">Sort by</label>
               <select
                 id="sort-select"
-                className="products-toolbar__select"
+                className="input products-toolbar__select"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -270,56 +209,32 @@ export default function Products() {
             </div>
           </div>
 
-          {/* Active filter chips */}
-          {hasActiveFilters && !isLoading && (
+          {activeFilters.length > 0 && !isLoading && (
             <div className="products-filter-chips" aria-label="Active filters">
-              {activeCategory !== 'all' && (
-                <span className="filter-chip">
-                  {CATEGORIES.find((c) => c.id === activeCategory)?.label}
-                  <button onClick={() => setActiveCategory('all')} aria-label="Remove category filter">✕</button>
+              {activeFilters.map((f) => (
+                <span key={f.key} className="filter-chip">
+                  {f.label}
+                  <button onClick={f.clear} aria-label={`Remove filter: ${f.label}`}>
+                    <Icon name="x" size={12} strokeWidth={2.5} />
+                  </button>
                 </span>
-              )}
-              {searchQuery && (
-                <span className="filter-chip">
-                  "{searchQuery}"
-                  <button onClick={() => setSearchQuery('')} aria-label="Clear search">✕</button>
-                </span>
-              )}
-              {sortBy !== 'featured' && (
-                <span className="filter-chip">
-                  {SORT_OPTIONS.find((s) => s.value === sortBy)?.label}
-                  <button onClick={() => setSortBy('featured')} aria-label="Reset sort">✕</button>
-                </span>
-              )}
+              ))}
             </div>
           )}
 
-          {/* ── Grid ── */}
-          <div className="products-grid-main" role="list" aria-label="Products">
+          <div className="products-grid-main">
+            {isLoading && <SkeletonGrid count={6} />}
 
-            {/* Loading state — show 8 skeleton cards */}
-            {isLoading && <SkeletonGrid count={8} />}
+            {!isLoading && filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
 
-            {/* Loaded + has results */}
-            {!isLoading && filteredProducts.length > 0 &&
-              filteredProducts.map((product) => (
-                <div key={product.id} role="listitem">
-                  <ProductCard product={product} />
-                </div>
-              ))
-            }
-
-            {/* Loaded + empty state */}
             {!isLoading && filteredProducts.length === 0 && (
-              <div className="products-empty" role="status">
-                <span className="products-empty__icon" aria-hidden="true">🔍</span>
-                <h2 className="products-empty__title">No products found</h2>
-                <p className="products-empty__desc">
-                  Try a different search term or remove some filters.
-                </p>
-                <button className="btn btn-primary" onClick={clearFilters}>
-                  Clear Filters
-                </button>
+              <div className="empty-state products-empty" role="status">
+                <span className="empty-state__icon"><Icon name="search" size={28} /></span>
+                <h2>Nothing matches that yet</h2>
+                <p>Try a different word, or clear the filters to see everything that's in season.</p>
+                <button className="btn btn-primary" onClick={clearFilters}>Clear filters</button>
               </div>
             )}
           </div>

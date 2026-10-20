@@ -47,3 +47,4 @@ export function SkeletonGrid({ count = 8 }) {
     </>
   );
 }
+

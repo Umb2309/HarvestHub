@@ -1,37 +1,39 @@
 /**
  * Home Page
  * ----------
- * Assembled from several visual sections:
- *  1. Hero          — full-width banner with CTA
- *  2. Stats         — 3 trust-building numbers
- *  3. Categories    — pill filter buttons
- *  4. FeaturedProducts — product cards grid
- *  5. HowItWorks    — 3-step explainer
- *  6. FarmerSpotlight — farmer cards
- *  7. CtaBanner     — newsletter / join CTA
+ *  1. Hero            — headline, CTAs, two product preview cards
+ *  2. FactsBar        — four facts derived from the data (not invented stats)
+ *  3. FeaturedProducts— this week's picks with category chips
+ *  4. Origins         — which state each staple comes from
+ *  5. HowItWorks      — three steps
+ *  6. FarmerSpotlight — featured farmers
+ *  7. JoinBanner      — split CTA for buyers and farmers
  *
- * 🎓 REACT CONCEPT — Component Composition
- * The Home page is itself a component, but it's built by composing
- * smaller components together. Each section is its own function defined
- * below the main export. This is called "co-location" — keeping related
- * pieces close together in the same file.
+ * 🎓 Component composition: each section is a small function in this file,
+ * and Home just stacks them. Keeping them together ("co-location") makes the
+ * page easy to read top to bottom.
  */
 
 import { useState } from 'react';
-import { Link }     from 'react-router-dom';
-import { getFeaturedProducts, CATEGORIES } from '../data/products';
-import { getFeaturedFarmers }              from '../data/farmers';
+import { Link } from 'react-router-dom';
+import { getFeaturedProducts, getProductById, CATEGORIES } from '../data/products';
+import { FARMERS, getFeaturedFarmers } from '../data/farmers';
+import { LOWEST_DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from '../data/delivery';
+import { naira, initials } from '../utils/format';
 import ProductCard from '../components/product/ProductCard';
-import FarmerCard  from '../components/farmer/FarmerCard';
+import FarmerCard from '../components/farmer/FarmerCard';
+import SmartImage from '../components/ui/SmartImage';
+import Icon from '../components/ui/Icon';
 import './Home.css';
 
-/* ─────────────────────────────────────────────────────────── */
-/* 1. HERO SECTION                                             */
-/* ─────────────────────────────────────────────────────────── */
+/* ── 1. Hero ─────────────────────────────────────────────── */
 function Hero() {
+  const tomatoes = getProductById('p001');
+  const eggs = getProductById('p009');
+  const faces = FARMERS.slice(0, 4);
+
   return (
     <section className="hero" aria-labelledby="hero-heading">
-      {/* Background image with overlay */}
       <div className="hero__bg" aria-hidden="true">
         <img
           src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1600&h=900&fit=crop"
@@ -41,74 +43,64 @@ function Hero() {
         <div className="hero__bg-overlay" />
       </div>
 
-      {/* Content */}
       <div className="hero__content container">
         <div className="hero__text animate-fade-in-up">
-          {/* Small label above the heading */}
-          <span className="badge badge-accent hero__label">🌱 Farm to Table</span>
+          <span className="hero__label">
+            <Icon name="truck" size={15} /> Now delivering across Lagos, Abuja & Ibadan
+          </span>
 
           <h1 id="hero-heading" className="hero__heading">
-            Fresh From the <br />
-            <span className="hero__heading-highlight">Farm, Direct</span>
-            <br /> to Your Door
+            Buy straight from <br />
+            <span className="hero__heading-highlight">the farmers</span> who<br />
+            grow your food
           </h1>
 
           <p className="hero__sub">
-            Skip the supermarket. Shop directly from 200+ local farmers and get
-            the freshest, most flavourful produce delivered to your door.
+            Tomatoes from Kano, yams from Benue, eggs from Abeokuta. Order from the farm,
+            skip the market middlemen, and pay a fair price that actually reaches the grower.
           </p>
 
-          {/* CTA Buttons */}
           <div className="hero__actions">
-            <Link to="/products" className="btn btn-secondary btn-lg">
-              Shop Fresh Produce
-            </Link>
-            <Link to="/farmers" className="btn btn-lg hero__btn-outline">
-              Meet the Farmers
-            </Link>
+            <Link to="/products" className="btn btn-secondary btn-lg">Shop fresh produce</Link>
+            <Link to="/farmers" className="btn btn-lg btn-light-outline">Meet the farmers</Link>
           </div>
 
-          {/* Social proof row */}
           <div className="hero__proof">
             <div className="hero__proof-avatars" aria-hidden="true">
-              {['photo-1535713875002-d1d0cf377fde', 'photo-1580489944761-15a19d654956', 'photo-1506794778202-cad84cf45f1d'].map((id, i) => (
-                <img
-                  key={i}
-                  src={`https://images.unsplash.com/${id}?w=40&h=40&fit=crop&crop=face`}
+              {faces.map((f, i) => (
+                <SmartImage
+                  key={f.id}
+                  src={f.avatar}
                   alt=""
                   className="hero__proof-avatar"
-                  style={{ zIndex: 3 - i }}
+                  variant="avatar"
+                  fallback={initials(f.name)}
+                  style={{ zIndex: faces.length - i }}
                 />
               ))}
             </div>
             <p className="hero__proof-text">
-              <strong>4,800+</strong> happy customers this month
+              <strong>{FARMERS.length} partner farms</strong> across {new Set(FARMERS.map((f) => f.state)).size} states
             </p>
           </div>
         </div>
 
-        {/* Floating product cards on the right */}
+        {/* Preview cards — decorative, the real products are below */}
         <div className="hero__visual animate-fade-in" aria-hidden="true">
-          <div className="hero__float-card hero__float-card--1">
-            <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=280&h=200&fit=crop" alt="" />
-            <div className="hero__float-info">
-              <span>Heirloom Tomatoes</span>
-              <strong>$4.99 / lb</strong>
+          {[tomatoes, eggs].map((p, i) => (
+            <div key={p.id} className={`hero__float-card hero__float-card--${i + 1}`}>
+              <SmartImage src={p.image} alt="" className="hero__float-img" fallback={p.mark} />
+              <div className="hero__float-info">
+                <span>{p.name} · {p.farmerLocation.split(',').pop().trim()}</span>
+                <strong>{naira(p.price)} <small>{p.unit}</small></strong>
+              </div>
             </div>
-          </div>
-          <div className="hero__float-card hero__float-card--2">
-            <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=280&h=200&fit=crop" alt="" />
-            <div className="hero__float-info">
-              <span>Fresh Strawberries</span>
-              <strong>$5.49 / pint</strong>
-            </div>
-          </div>
-          {/* Floating badge */}
+          ))}
           <div className="hero__float-badge">
-            <span className="hero__float-badge-icon">✓</span>
+            <span className="hero__float-badge-icon"><Icon name="check" size={18} strokeWidth={2.5} /></span>
             <div>
-              <p className="hero__float-badge-title">Certified Organic</p>
-              <p className="hero__float-badge-sub">Sourced with care</p>
+              <p className="hero__float-badge-title">Packed the day it ships</p>
+              <p className="hero__float-badge-sub">Not stored in a warehouse</p>
             </div>
           </div>
         </div>
@@ -117,26 +109,25 @@ function Hero() {
   );
 }
 
-/* ─────────────────────────────────────────────────────────── */
-/* 2. TRUST STATS BAR                                          */
-/* ─────────────────────────────────────────────────────────── */
-const STATS = [
-  { value: '200+',   label: 'Local Farmers',     icon: '🌾' },
-  { value: '1,200+', label: 'Fresh Products',    icon: '🥬' },
-  { value: '4,800+', label: 'Happy Customers',   icon: '❤️' },
-  { value: '48hr',   label: 'Farm to Doorstep',  icon: '🚚' },
-];
+/* ── 2. Facts bar ────────────────────────────────────────── */
+function FactsBar() {
+  const facts = [
+    { icon: 'sprout', value: `${FARMERS.length} farms`,          label: `Verified, in ${new Set(FARMERS.map((f) => f.state)).size} states` },
+    { icon: 'truck',  value: `From ${naira(LOWEST_DELIVERY_FEE)}`, label: `Delivery · free over ${naira(FREE_DELIVERY_THRESHOLD)}` },
+    { icon: 'clock',  value: '1–4 days',                          label: 'From harvest to your door' },
+    { icon: 'cash',   value: 'Pay on delivery',                   label: 'Or card and bank transfer' },
+  ];
 
-function StatsBar() {
   return (
-    <section className="stats-bar" aria-label="HarvestHub at a glance">
-      <div className="container stats-bar__grid">
-        {/* 🎓 .map() — iterate over the STATS array and render a <div> for each */}
-        {STATS.map(({ value, label, icon }) => (
-          <div key={label} className="stats-bar__item">
-            <span className="stats-bar__icon" aria-hidden="true">{icon}</span>
-            <span className="stats-bar__value">{value}</span>
-            <span className="stats-bar__label">{label}</span>
+    <section className="facts-bar" aria-label="HarvestHub at a glance">
+      <div className="container facts-bar__grid">
+        {facts.map(({ icon, value, label }) => (
+          <div key={value} className="facts-bar__item">
+            <span className="facts-bar__icon"><Icon name={icon} size={22} /></span>
+            <div>
+              <p className="facts-bar__value">{value}</p>
+              <p className="facts-bar__label">{label}</p>
+            </div>
           </div>
         ))}
       </div>
@@ -144,112 +135,104 @@ function StatsBar() {
   );
 }
 
-/* ─────────────────────────────────────────────────────────── */
-/* 3. FEATURED PRODUCTS (with category filter)                 */
-/* ─────────────────────────────────────────────────────────── */
-
+/* ── 3. Featured products ────────────────────────────────── */
 /**
- * 🎓 REACT CONCEPT — useState for UI state
- *
- * `activeCategory` stores which filter pill is selected.
- * When a user clicks a pill, setActiveCategory runs, React re-renders
- * FeaturedProducts, and `displayedProducts` is recalculated automatically.
- * No manual DOM updates needed — React handles it.
+ * 🎓 useState for UI state: `activeCategory` remembers which chip is selected.
+ * Changing it re-renders this section and `displayed` is recalculated.
  */
 function FeaturedProducts() {
   const [activeCategory, setActiveCategory] = useState('all');
-
-  // All featured products from our mock data
   const featured = getFeaturedProducts();
 
-  // Filter products based on activeCategory
-  // If 'all', show everything. Otherwise filter by category.
-  const displayedProducts = activeCategory === 'all'
-    ? featured
-    : featured.filter((p) => p.category === activeCategory);
+  // Only show chips for categories that actually have featured products
+  const chips = CATEGORIES.filter((c) => c.id === 'all' || featured.some((p) => p.category === c.id));
+  const displayed = activeCategory === 'all' ? featured : featured.filter((p) => p.category === activeCategory);
 
   return (
     <section className="section featured-products" aria-labelledby="products-heading">
       <div className="container">
-
-        {/* Section header */}
-        <div className="section-header">
-          <span className="section-label">Fresh Picks</span>
-          <h2 id="products-heading">Harvested This Week</h2>
-          <p>Seasonal produce at peak freshness, sourced directly from local farms.</p>
+        <div className="section-header section-header--split">
+          <div>
+            <span className="section-label">This week</span>
+            <h2 id="products-heading">Fresh from the farms</h2>
+            <p>Harvested to order and priced by the farmers themselves.</p>
+          </div>
+          <Link to="/products" className="btn btn-outline">
+            See all produce <Icon name="arrowRight" size={16} />
+          </Link>
         </div>
 
-        {/* Category filter pills */}
-        {/* 🎓 role="tablist" is an ARIA attribute for accessibility */}
-        <div className="category-pills" role="tablist" aria-label="Filter by category">
-          {CATEGORIES.map(({ id, label, icon }) => (
+        <div className="chip-row featured-products__chips" role="tablist" aria-label="Filter by category">
+          {chips.map(({ id, label }) => (
             <button
               key={id}
               role="tab"
               aria-selected={activeCategory === id}
-              className={`category-pill ${activeCategory === id ? 'category-pill--active' : ''}`}
+              className={`chip${activeCategory === id ? ' chip--active' : ''}`}
               onClick={() => setActiveCategory(id)}
             >
-              <span aria-hidden="true">{icon}</span>
               {label}
             </button>
           ))}
         </div>
 
-        {/* Products Grid */}
-        {displayedProducts.length > 0 ? (
-          <div className="products-grid">
-            {displayedProducts.map((product) => (
-              // Each ProductCard gets the full product object as a prop
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          // Empty state — shown when no products match the filter
-          <div className="empty-state">
-            <span className="empty-state__icon" aria-hidden="true">🥬</span>
-            <h3>No featured products in this category yet</h3>
-            <p>Check back soon or browse all products.</p>
-            <Link to="/products" className="btn btn-primary">Browse All Products</Link>
-          </div>
-        )}
-
-        {/* View all link */}
-        <div className="section-cta">
-          <Link to="/products" className="btn btn-outline btn-lg">
-            View All Products
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </Link>
+        <div className="products-grid">
+          {displayed.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-/* ─────────────────────────────────────────────────────────── */
-/* 4. HOW IT WORKS                                             */
-/* ─────────────────────────────────────────────────────────── */
+/* ── 4. Origins ──────────────────────────────────────────── */
+const ORIGINS = [
+  { state: 'Kano',        crop: 'Tomatoes & peppers', farmerId: 'f001' },
+  { state: 'Benue',       crop: 'Yams & garri',       farmerId: 'f002' },
+  { state: 'Plateau',     crop: 'Potatoes & carrots', farmerId: 'f004' },
+  { state: 'Ebonyi',      crop: 'Abakaliki rice',     farmerId: 'f005' },
+  { state: 'Ogun',        crop: 'Eggs & chicken',     farmerId: 'f003' },
+  { state: 'Cross River', crop: 'Plantain & palm oil', farmerId: 'f006' },
+];
+
+function Origins() {
+  return (
+    <section className="section origins" aria-labelledby="origins-heading">
+      <div className="container">
+        <div className="section-header">
+          <span className="section-label">Know where it's from</span>
+          <h2 id="origins-heading">Every staple from the state that grows it best</h2>
+          <p>Each product page tells you the farm, the town and the person who grew it.</p>
+        </div>
+
+        <ul className="origins__grid">
+          {ORIGINS.map(({ state, crop, farmerId }) => {
+            const farmer = FARMERS.find((f) => f.id === farmerId);
+            return (
+              <li key={state}>
+                <Link to={`/farmers/${farmerId}`} className="origins__card">
+                  <span className="origins__state">{state}</span>
+                  <span className="origins__crop">{crop}</span>
+                  <span className="origins__farm">
+                    {farmer.farm}
+                    <Icon name="arrowRight" size={14} />
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* ── 5. How it works ─────────────────────────────────────── */
 const STEPS = [
-  {
-    step: '01',
-    icon: '🔍',
-    title: 'Browse & Discover',
-    desc: 'Explore hundreds of fresh products from verified local farmers. Filter by category, location, or farm.',
-  },
-  {
-    step: '02',
-    icon: '🛒',
-    title: 'Add to Your Cart',
-    desc: 'Select your produce, choose quantities, and add items from multiple farms in one single order.',
-  },
-  {
-    step: '03',
-    icon: '🚚',
-    title: 'Receive Your Harvest',
-    desc: 'Your order is picked fresh and delivered within 48 hours — from the field straight to your kitchen.',
-  },
+  { icon: 'search', title: 'Pick from real farms', desc: 'Browse by product or by farmer. Every listing shows where it was grown and who grew it.' },
+  { icon: 'basket', title: 'Order before the cut-off', desc: 'Farmers harvest against confirmed orders, so nothing sits in a warehouse waiting for you.' },
+  { icon: 'truck',  title: 'Get it in 1–4 days', desc: 'Same or next day for Lagos greens and eggs; 2–4 days for produce travelling from the north.' },
 ];
 
 function HowItWorks() {
@@ -257,46 +240,43 @@ function HowItWorks() {
     <section className="section how-it-works" aria-labelledby="how-heading">
       <div className="container">
         <div className="section-header">
-          <span className="section-label">Simple Process</span>
-          <h2 id="how-heading">How HarvestHub Works</h2>
-          <p>From farm gate to your front door in three easy steps.</p>
+          <span className="section-label">How it works</span>
+          <h2 id="how-heading">From the farm gate to your gate</h2>
         </div>
 
-        <div className="how-it-works__grid">
-          {STEPS.map(({ step, icon, title, desc }, index) => (
-            <div key={step} className="how-it-works__step">
-              {/* Connector line between steps (hidden on last item) */}
-              {index < STEPS.length - 1 && (
-                <div className="how-it-works__connector" aria-hidden="true" />
-              )}
-              <div className="how-it-works__icon-wrap" aria-hidden="true">
-                <span className="how-it-works__icon">{icon}</span>
+        <ol className="how-it-works__grid">
+          {STEPS.map(({ icon, title, desc }, index) => (
+            <li key={title} className="how-it-works__step">
+              <div className="how-it-works__top">
+                <span className="how-it-works__icon-wrap"><Icon name={icon} size={24} /></span>
+                <span className="how-it-works__step-num" aria-hidden="true">0{index + 1}</span>
               </div>
-              <span className="how-it-works__step-num" aria-hidden="true">{step}</span>
               <h3 className="how-it-works__title">{title}</h3>
               <p className="how-it-works__desc">{desc}</p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );
 }
 
-/* ─────────────────────────────────────────────────────────── */
-/* 5. FARMER SPOTLIGHT                                         */
-/* ─────────────────────────────────────────────────────────── */
+/* ── 6. Farmer spotlight ─────────────────────────────────── */
 function FarmerSpotlight() {
-  // getFeaturedFarmers() returns farmers where featured === true
-  const farmers = getFeaturedFarmers();
+  const farmers = getFeaturedFarmers().slice(0, 3);
 
   return (
     <section className="section farmer-spotlight" aria-labelledby="farmers-heading">
       <div className="container">
-        <div className="section-header">
-          <span className="section-label">Meet the Growers</span>
-          <h2 id="farmers-heading">Local Farmers You Can Trust</h2>
-          <p>Every farmer on HarvestHub is verified, passionate, and dedicated to sustainable growing practices.</p>
+        <div className="section-header section-header--split">
+          <div>
+            <span className="section-label">The growers</span>
+            <h2 id="farmers-heading">Meet some of our farmers</h2>
+            <p>Every farm is visited by our team before it can list on HarvestHub.</p>
+          </div>
+          <Link to="/farmers" className="btn btn-outline">
+            All farmers <Icon name="arrowRight" size={16} />
+          </Link>
         </div>
 
         <div className="farmers-grid">
@@ -304,67 +284,48 @@ function FarmerSpotlight() {
             <FarmerCard key={farmer.id} farmer={farmer} />
           ))}
         </div>
-
-        <div className="section-cta">
-          <Link to="/farmers" className="btn btn-outline btn-lg">
-            Meet All Farmers
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </Link>
-        </div>
       </div>
     </section>
   );
 }
 
-/* ─────────────────────────────────────────────────────────── */
-/* 6. CTA BANNER                                               */
-/* ─────────────────────────────────────────────────────────── */
-function CtaBanner() {
+/* ── 7. Join banner ──────────────────────────────────────── */
+function JoinBanner() {
   return (
-    <section className="cta-banner" aria-labelledby="cta-heading">
-      <div className="cta-banner__bg" aria-hidden="true">
-        <img
-          src="https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=1400&h=500&fit=crop"
-          alt=""
-          className="cta-banner__bg-img"
-        />
-        <div className="cta-banner__overlay" />
-      </div>
-      <div className="container cta-banner__content">
-        <div className="cta-banner__text">
-          <span className="section-label" style={{ color: 'rgba(255,255,255,0.7)' }}>
-            Join the Community
-          </span>
-          <h2 id="cta-heading" className="cta-banner__heading">
-            Start Shopping Fresh Today
-          </h2>
-          <p className="cta-banner__sub">
-            Create your free account and get 10% off your first order. No subscription needed.
+    <section className="join-banner" aria-label="Get started">
+      <div className="container join-banner__grid">
+        <div className="join-banner__panel join-banner__panel--buyer">
+          <span className="section-label">For households & kitchens</span>
+          <h2 className="join-banner__heading">Fill your kitchen for the week</h2>
+          <p className="join-banner__sub">
+            Create a free account to save your address, track orders and get 10% off your first delivery.
           </p>
-          <div className="cta-banner__actions">
-            <Link to="/register" className="btn btn-secondary btn-lg">Get Started Free</Link>
-            <Link to="/about"    className="btn btn-lg cta-banner__ghost-btn">Learn More</Link>
-          </div>
+          <Link to="/register" className="btn btn-secondary btn-lg">Create a free account</Link>
+        </div>
+
+        <div className="join-banner__panel join-banner__panel--farmer">
+          <span className="section-label">For farmers</span>
+          <h2 className="join-banner__heading">Sell your harvest at your own price</h2>
+          <p className="join-banner__sub">
+            List your produce, set your price and get paid into your bank account within 48 hours of delivery.
+          </p>
+          <Link to="/register?role=farmer" className="btn btn-lg btn-light-outline">Start selling</Link>
         </div>
       </div>
     </section>
   );
 }
 
-/* ─────────────────────────────────────────────────────────── */
-/* MAIN HOME EXPORT — assembles all sections                   */
-/* ─────────────────────────────────────────────────────────── */
 export default function Home() {
   return (
     <>
       <Hero />
-      <StatsBar />
+      <FactsBar />
       <FeaturedProducts />
+      <Origins />
       <HowItWorks />
       <FarmerSpotlight />
-      <CtaBanner />
+      <JoinBanner />
     </>
   );
 }

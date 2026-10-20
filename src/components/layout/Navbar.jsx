@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
+import Logo from '../ui/Logo';
+import Icon from '../ui/Icon';
+import SmartImage from '../ui/SmartImage';
+import { initials } from '../../utils/format';
 import './Navbar.css';
 
 const NAV_LINKS = [
@@ -16,6 +20,7 @@ export default function Navbar() {
   const { cartCount }         = useCart();
   const { user, logout }      = useAuth();
   const navigate              = useNavigate();
+  const { pathname }          = useLocation();
 
   const [menuOpen,    setMenuOpen]    = useState(false);
   const [scrolled,    setScrolled]    = useState(false);
@@ -30,7 +35,19 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close mobile menu on route change / resize
+  // Close menus whenever the route changes
+  useEffect(() => {
+    setMenuOpen(false);
+    setProfileOpen(false);
+  }, [pathname]);
+
+  // Stop the page behind the mobile menu from scrolling
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
+  // Close mobile menu when resizing up to desktop
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
     window.addEventListener('resize', onResize);
@@ -61,10 +78,7 @@ export default function Navbar() {
       <div className="navbar__inner container">
 
         {/* ── Brand ── */}
-        <Link to="/" className="navbar__brand" aria-label="HarvestHub home" onClick={closeMobileMenu}>
-          <span className="navbar__logo-icon" aria-hidden="true">🌿</span>
-          <span className="navbar__logo-text">HarvestHub</span>
-        </Link>
+        <Logo onClick={closeMobileMenu} />
 
         {/* ── Desktop Nav ── */}
         <nav className="navbar__nav" aria-label="Main navigation">
@@ -90,11 +104,7 @@ export default function Navbar() {
             className="navbar__cart-btn"
             aria-label={`Shopping cart, ${cartCount} item${cartCount !== 1 ? 's' : ''}`}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="9"  cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
+            <Icon name="cart" size={22} />
             {cartCount > 0 && (
               <span className="navbar__cart-badge" aria-live="polite">{cartCount}</span>
             )}
@@ -110,16 +120,15 @@ export default function Navbar() {
                 aria-haspopup="true"
                 aria-label="Account menu"
               >
-                <img
+                <SmartImage
                   src={user.avatar}
-                  alt={user.name}
+                  alt=""
                   className="navbar__avatar"
-                  onError={(e) => { e.target.style.display = 'none'; }}
+                  variant="avatar"
+                  fallback={initials(user.name)}
                 />
                 <span className="navbar__avatar-name">{user.name.split(' ')[0]}</span>
-                <svg className={`navbar__chevron${profileOpen ? ' rotated' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                <Icon name="chevronDown" size={14} strokeWidth={2.5} className={`navbar__chevron${profileOpen ? ' rotated' : ''}`} />
               </button>
 
               {profileOpen && (
@@ -129,16 +138,16 @@ export default function Navbar() {
                     <p className="navbar__dropdown-email">{user.email}</p>
                   </div>
                   <hr className="navbar__dropdown-divider" />
+                  <Link to="/cart" className="navbar__dropdown-item" role="menuitem">
+                    <Icon name="cart" size={16} />
+                    My cart {cartCount > 0 && `(${cartCount})`}
+                  </Link>
                   <button
                     className="navbar__dropdown-item navbar__dropdown-item--danger"
                     onClick={handleLogout}
                     role="menuitem"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                      <polyline points="16 17 21 12 16 7" />
-                      <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
+                    <Icon name="logout" size={16} />
                     Sign out
                   </button>
                 </div>
@@ -147,7 +156,7 @@ export default function Navbar() {
           ) : (
             <div className="navbar__auth-links">
               <Link to="/login" className="btn btn-ghost btn-sm">Sign in</Link>
-              <Link to="/register" className="btn btn-primary btn-sm">Join free</Link>
+              <Link to="/register" className="btn btn-primary btn-sm">Create account</Link>
             </div>
           )}
 
@@ -201,10 +210,11 @@ export default function Navbar() {
         ) : (
           <div className="navbar__mobile-auth">
             <Link to="/login"    className="btn btn-outline btn-full" onClick={closeMobileMenu}>Sign in</Link>
-            <Link to="/register" className="btn btn-primary btn-full" onClick={closeMobileMenu}>Join free</Link>
+            <Link to="/register" className="btn btn-primary btn-full" onClick={closeMobileMenu}>Create account</Link>
           </div>
         )}
       </div>
     </header>
   );
 }
+

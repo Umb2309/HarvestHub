@@ -1,0 +1,75 @@
+/* ============================================================
+   Farmers Page
+   ============================================================ */
+
+.farmers-filters {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding-top: var(--space-8);
+}
+
+.farmers-filters__state {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.farmers-filters__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semi);
+  color: var(--color-text-secondary);
+}
+
+.farmers-filters__state .input {
+  width: auto;
+  min-width: 180px;
+}
+
+.farmers-results { padding-block: var(--space-6) var(--space-12); }
+
+.farmers-results__count {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.farmers-directory {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-6);
+}
+
+/* "Sell on HarvestHub" band */
+.farmers-sell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-16);
+  padding: var(--space-10);
+  border-radius: var(--radius-2xl);
+  background: var(--color-earth-50);
+  border: 1px solid #ecdcc8;
+}
+
+.farmers-sell__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-black);
+  margin-bottom: var(--space-2);
+}
+
+.farmers-sell__text {
+  max-width: 560px;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+
+@media (max-width: 640px) {
+  .farmers-filters__state { width: 100%; }
+  .farmers-filters__state .input { flex: 1; }
+  .farmers-sell { padding: var(--space-6); }
+}

@@ -1,77 +1,108 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+/**
+ * AuthContext (mock)
+ * -------------------
+ * Fakes sign-in and registration with localStorage so the UI flows work
+ * without a backend. Swap login/register for real API calls later; the
+ * components only depend on { user, login, register, logout }.
+ *
+ * ⚠️ Demo only: passwords are kept in localStorage in plain text.
+ * Never do this with real users.
+ */
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(null);
 
-const STORAGE_KEY = 'harvesthub_user';
+const SESSION_KEY = 'harvesthub_user';
+const ACCOUNTS_KEY = 'harvesthub_accounts';
+
+export const DEMO_ACCOUNT = { email: 'demo@harvesthub.ng', password: 'demo1234' };
+
+const DEMO_USER = {
+  id: 'usr_001',
+  name: 'Tolu Adebayo',
+  email: DEMO_ACCOUNT.email,
+  phone: '+2348025550147',
+  state: 'Lagos',
+  role: 'buyer',
+  avatar: null, // falls back to initials
+};
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function readJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJSON(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
+}
 
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Lazy initial state: read the saved session once, before the first render,
+  // so pages never flash a "signed out" state on refresh.
+  const [user, setUser] = useState(() => readJSON(SESSION_KEY, null));
 
-  // Hydrate session from localStorage
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setUser(JSON.parse(stored));
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  /**
-   * Mock login — in production this would hit an API endpoint.
-   * Returns { success, error }
-   */
-  const login = async ({ email, password }) => {
-    // Simulate network delay
-    await new Promise((r) => setTimeout(r, 800));
-
-    // Hardcoded demo account for portfolio demo
-    if (email === 'demo@harvesthub.com' && password === 'demo1234') {
-      const userData = {
-        id: 'usr_001',
-        name: 'Alex Johnson',
-        email,
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
-        role: 'consumer',
-      };
-      setUser(userData);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
-      return { success: true };
-    }
-    return { success: false, error: 'Invalid email or password.' };
+  const startSession = (u) => {
+    setUser(u);
+    writeJSON(SESSION_KEY, u);
   };
 
-  /**
-   * Mock register — in production this would POST to /api/auth/register.
-   */
-  const register = async ({ name, email, password }) => {
-    await new Promise((r) => setTimeout(r, 800));
-    // Prevent duplicate demo account
-    if (email === 'demo@harvesthub.com') {
-      return { success: false, error: 'Email already in use.' };
+  /** Returns { success, error } */
+  const login = async ({ email, password }) => {
+    await wait(700); // pretend network latency
+    const e = email.trim().toLowerCase();
+
+    if (e === DEMO_ACCOUNT.email && password === DEMO_ACCOUNT.password) {
+      startSession(DEMO_USER);
+      return { success: true };
     }
-    const userData = {
+
+    const account = readJSON(ACCOUNTS_KEY, []).find((a) => a.email === e);
+    if (account && account.password === password) {
+      const { password: _pw, ...profile } = account;
+      startSession(profile);
+      return { success: true };
+    }
+
+    return { success: false, error: 'That email and password don\'t match an account.' };
+  };
+
+  /** Returns { success, error } */
+  const register = async ({ name, email, phone, state, role, password }) => {
+    await wait(800);
+    const e = email.trim().toLowerCase();
+    const accounts = readJSON(ACCOUNTS_KEY, []);
+
+    if (e === DEMO_ACCOUNT.email || accounts.some((a) => a.email === e)) {
+      return { success: false, error: 'An account with this email already exists. Try signing in.' };
+    }
+
+    const profile = {
       id: `usr_${Date.now()}`,
-      name,
-      email,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2d6a4f&color=fff`,
-      role: 'consumer',
+      name: name.trim(),
+      email: e,
+      phone,
+      state,
+      role,
+      avatar: null,
     };
-    setUser(userData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+    writeJSON(ACCOUNTS_KEY, [...accounts, { ...profile, password }]);
+    startSession(profile);
     return { success: true };
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
+    try { localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
