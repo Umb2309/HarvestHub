@@ -15,10 +15,10 @@ import { initials } from '../../utils/format';
 import './FarmerCard.css';
 
 export default function FarmerCard({ farmer }) {
-  const { id, name, farm, location, avatar, coverImage, specialties, rating, reviewCount, productCount, yearsActive, quote } = farmer;
+  const { id, name, farm, location, avatar, coverImage, specialties, rating, reviewCount, productCount, yearsActive } = farmer;
 
   return (
-    <Link to={`/farmers/${id}`} className="farmer-card card" aria-label={`${name}, ${farm} — view profile`}>
+    <Link to={`/farmers/${id}`} className="farmer-card card" aria-label={`${name}, ${farm}. View profile`}>
       <div className="farmer-card__cover">
         <SmartImage src={coverImage} alt="" className="farmer-card__cover-img" loading="lazy" fallback="" />
         <div className="farmer-card__cover-overlay" aria-hidden="true" />
@@ -38,8 +38,6 @@ export default function FarmerCard({ farmer }) {
           <Icon name="pin" size={13} strokeWidth={2.2} />
           {location}
         </p>
-
-        {quote && <p className="farmer-card__quote">“{quote}”</p>}
 
         <div className="farmer-card__specialties">
           {specialties.slice(0, 3).map((spec) => (

@@ -102,8 +102,8 @@ export default function FarmerProfile() {
             <p className="farmer-profile__bio">{bio}</p>
             {quote && (
               <blockquote className="farmer-profile__quote">
-                <p>“{quote}”</p>
-                <footer>— {name}</footer>
+                <p>{quote}</p>
+                <footer>{name}</footer>
               </blockquote>
             )}
           </section>

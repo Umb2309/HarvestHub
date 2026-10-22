@@ -81,18 +81,6 @@
   margin-top: 2px;
 }
 
-.farmer-card__quote {
-  font-size: var(--text-sm);
-  font-style: italic;
-  line-height: 1.55;
-  color: var(--color-text-secondary);
-  padding-left: var(--space-3);
-  border-left: 3px solid var(--color-primary-100);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
 
 .farmer-card__location {
   display: flex;

@@ -132,8 +132,8 @@ export default function Checkout() {
           <span className="checkout-success__icon"><Icon name="check" size={32} strokeWidth={2.5} /></span>
           <h1 className="checkout-success__title">Order placed</h1>
           <p className="checkout-success__sub">
-            Thanks, {order.name.split(' ')[0]}. The farms have your order and will start packing.
-            We'll text updates to {order.phone}.
+            The farms have your order and will start packing it.
+            We'll send updates by SMS to {order.phone}.
           </p>
 
           {order.payment === 'transfer' && (
@@ -145,7 +145,7 @@ export default function Checkout() {
                 <div><dt>Account no.</dt><dd>0123456789</dd></div>
                 <div><dt>Account name</dt><dd>HarvestHub / {order.number}</dd></div>
               </dl>
-              <p className="form-hint">This account expires in 30 minutes. It's a demo — don't send real money.</p>
+              <p className="form-hint">This account expires in 30 minutes. This is a demo, so don't send real money.</p>
             </div>
           )}
 
@@ -353,7 +353,7 @@ export default function Checkout() {
           </button>
 
           <p className="checkout-summary__disclaimer">
-            <Icon name="shield" size={14} /> Demo checkout — no real payment is taken.
+            <Icon name="shield" size={14} /> Demo checkout. No real payment is taken.
           </p>
         </aside>
       </form>

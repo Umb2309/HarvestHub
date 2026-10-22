@@ -45,7 +45,7 @@ const RAW_PRODUCTS = [
   {
     id: 'p003', name: 'Ata Rodo (Scotch Bonnet)', category: 'vegetables',
     price: 5200, unit: 'per kg', farmerId: 'f001',
-    description: 'Hot, fragrant scotch bonnet peppers. A kilo goes a long way — most families freeze what they don\'t use in the first week.',
+    description: 'Hot, fragrant scotch bonnet peppers. A kilo goes a long way, so most families freeze what they don\'t use in the first week.',
     image: null,
     badge: 'Very hot', rating: 4.9, reviewCount: 117, inStock: true, featured: false,
   },
@@ -128,7 +128,7 @@ const RAW_PRODUCTS = [
   },
   {
     id: 'p015', name: 'Unripe Plantain', category: 'fruits',
-    price: 12000, unit: 'per bunch (14–18 fingers)', farmerId: 'f006',
+    price: 12000, unit: 'per bunch (14 to 18 fingers)', farmerId: 'f006',
     description: 'Big, green plantain fingers. Leave a few days to ripen for dodo, or cook green for porridge and chips.',
     image: null,
     badge: null, rating: 4.7, reviewCount: 81, inStock: true, featured: false,
@@ -143,7 +143,7 @@ const RAW_PRODUCTS = [
   {
     id: 'p017', name: 'Red Palm Oil', category: 'pantry',
     price: 14000, unit: 'per 5L keg', farmerId: 'f006',
-    description: 'Hand-processed palm oil with nothing added. It sets thick in cold weather — that\'s normal and a sign it hasn\'t been mixed.',
+    description: 'Hand-processed palm oil with nothing added. It sets thick in cold weather. That\'s normal and shows it hasn\'t been mixed.',
     image: null,
     badge: 'Nothing added', rating: 4.8, reviewCount: 112, inStock: true, featured: false,
   },

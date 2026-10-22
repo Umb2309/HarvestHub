@@ -41,14 +41,14 @@ export default function Footer() {
         <div className="footer__brand">
           <Logo tone="light" />
           <p className="footer__tagline">
-            Fresh food straight from Nigerian farms — tomatoes from Kano, yams from Benue,
-            rice from Abakaliki — delivered to your door.
+            We connect Nigerian farmers with households and kitchens that want to buy
+            directly from them.
           </p>
 
           <ul className="footer__contact">
             <li><Icon name="pin" size={16} /> 14 Adeola Odeku Street, Victoria Island, Lagos</li>
             <li><Icon name="phone" size={16} /> +234 802 555 0147</li>
-            <li><Icon name="clock" size={16} /> Mon–Sat, 8am – 6pm</li>
+            <li><Icon name="clock" size={16} /> Monday to Saturday, 8am to 6pm</li>
           </ul>
 
           <div className="footer__socials">
@@ -76,13 +76,13 @@ export default function Footer() {
       <div className="footer__newsletter">
         <div className="container footer__newsletter-inner">
           <div>
-            <h3 className="footer__newsletter-heading">What's in season this week</h3>
-            <p className="footer__newsletter-sub">One short email every Monday with new harvests and prices. No spam.</p>
+            <h3 className="footer__newsletter-heading">Weekly harvest updates</h3>
+            <p className="footer__newsletter-sub">New produce and price changes, sent every Monday.</p>
           </div>
 
           {subscribed ? (
             <p className="footer__newsletter-done" role="status">
-              <Icon name="check" size={18} /> You're on the list. See you on Monday.
+              <Icon name="check" size={18} /> Thanks. You're subscribed.
             </p>
           ) : (
             <form className="footer__newsletter-form" onSubmit={handleSubscribe} aria-label="Newsletter sign-up">
@@ -102,8 +102,8 @@ export default function Footer() {
       </div>
 
       <div className="footer__bottom container">
-        <p className="footer__copy">© {year} HarvestHub Agro Ltd. Demo project — prices and farms are sample data.</p>
-        <p className="footer__pay">Pay by card, bank transfer or cash on delivery</p>
+        <p className="footer__copy">© {year} HarvestHub Agro Ltd. Prices and farms shown are sample data.</p>
+        <p className="footer__pay">Card, bank transfer and pay on delivery accepted</p>
       </div>
     </footer>
   );

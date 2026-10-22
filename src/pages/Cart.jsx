@@ -20,7 +20,7 @@ export default function Cart() {
         <div className="empty-state">
           <span className="empty-state__icon"><Icon name="basket" size={28} /></span>
           <h1>Your cart is empty</h1>
-          <p>Tomatoes from Kano, yam from Benue, eggs from Abeokuta — start with what you need this week.</p>
+          <p>Add produce from the catalogue and it will show up here.</p>
           <Link to="/products" className="btn btn-primary">Browse produce</Link>
         </div>
       </div>

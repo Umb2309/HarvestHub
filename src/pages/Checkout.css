@@ -226,7 +226,7 @@ fieldset.checkout-card { min-width: 0; }
   width: 100%;
   padding: var(--space-5);
   margin-bottom: var(--space-5);
-  border: 1.5px dashed var(--color-accent);
+  border: 1px solid #ecdcc8;
   border-radius: var(--radius-lg);
   background: var(--color-earth-50);
   text-align: left;

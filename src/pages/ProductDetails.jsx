@@ -142,7 +142,7 @@ export default function ProductDetails() {
             <ul className="product-details-facts">
               <li><Icon name="pin" size={16} /> Grown in {product.farmerLocation}</li>
               <li><Icon name="truck" size={16} /> Delivered to {farmer?.deliversTo.join(', ')}</li>
-              <li><Icon name="shield" size={16} /> Not happy with the quality? We refund or replace it.</li>
+              <li><Icon name="shield" size={16} /> Refund or replacement if an item arrives damaged</li>
             </ul>
 
             {farmer && (
@@ -167,7 +167,7 @@ export default function ProductDetails() {
 
         {related.length > 0 && (
           <section className="product-details-related" aria-labelledby="related-heading">
-            <h2 id="related-heading" className="product-details-related__title">You might also need</h2>
+            <h2 id="related-heading" className="product-details-related__title">Related products</h2>
             <div className="product-details-related-grid">
               {related.map((p) => <ProductCard key={p.id} product={p} />)}
             </div>

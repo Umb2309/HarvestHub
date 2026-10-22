@@ -54,8 +54,8 @@ export default function Farmers() {
             <div>
               <h1 className="page-header__title">Meet the farmers</h1>
               <p className="page-header__subtitle">
-                {FARMERS.length} farms across {FARMER_STATES.length} states. Our team visits every one
-                before it lists, and you can order from any of them directly.
+                {FARMERS.length} farms across {FARMER_STATES.length} states. Our team visits every farm
+                before it can list, and you order from the farmer directly.
               </p>
             </div>
 
@@ -128,7 +128,7 @@ export default function Farmers() {
           <div>
             <h2 className="farmers-sell__title">Do you farm? Sell on HarvestHub.</h2>
             <p className="farmers-sell__text">
-              No listing fee — we take 10% only when you make a sale. You set your price, we handle
+              There is no listing fee. We take 10% only when you make a sale. You set your price, we handle
               delivery, and payouts land in your bank account within 48 hours of the order arriving.
             </p>
           </div>

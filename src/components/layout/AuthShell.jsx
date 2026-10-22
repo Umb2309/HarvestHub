@@ -16,7 +16,7 @@ export default function AuthShell({ farmerId = 'f003', children }) {
       <aside className="auth__panel" aria-hidden="true">
         <Logo tone="light" />
         <figure className="auth__quote">
-          <blockquote>“{farmer.quote}”</blockquote>
+          <blockquote>{farmer.quote}</blockquote>
           <figcaption>
             <SmartImage src={farmer.avatar} alt="" className="auth__quote-avatar" variant="avatar" fallback={initials(farmer.name)} />
             <span>

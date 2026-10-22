@@ -181,9 +181,8 @@
 
 .farmer-profile__quote p {
   font-family: var(--font-heading);
-  font-size: var(--text-xl);
-  font-style: italic;
-  line-height: 1.5;
+  font-size: var(--text-lg);
+  line-height: 1.55;
   color: var(--color-text);
 }
 

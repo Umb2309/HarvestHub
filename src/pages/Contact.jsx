@@ -14,8 +14,8 @@ const TOPICS = [
 ];
 
 const CHANNELS = [
-  { icon: 'chat',  title: 'WhatsApp',  value: '+234 802 555 0147', href: 'https://wa.me/2348025550147', note: 'Fastest — usually under 15 minutes' },
-  { icon: 'phone', title: 'Call us',   value: '+234 802 555 0147', href: 'tel:+2348025550147',          note: 'Mon–Sat, 8am – 6pm' },
+  { icon: 'chat',  title: 'WhatsApp',  value: '+234 802 555 0147', href: 'https://wa.me/2348025550147', note: 'Usually replies within 15 minutes' },
+  { icon: 'phone', title: 'Call us',   value: '+234 802 555 0147', href: 'tel:+2348025550147',          note: 'Monday to Saturday, 8am to 6pm' },
   { icon: 'mail',  title: 'Email',     value: 'hello@harvesthub.ng', href: 'mailto:hello@harvesthub.ng', note: 'We reply within one working day' },
 ];
 
@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     q: 'How fresh is the produce, really?',
-    a: 'Farmers harvest against confirmed orders. Lagos greens and eggs usually arrive the day after they are picked; produce from the north takes 2–4 days in ventilated crates.',
+    a: 'Farmers harvest against confirmed orders. Lagos greens and eggs usually arrive the day after they are picked; produce from the north takes 2 to 4 days in ventilated crates.',
   },
   {
     q: 'Can I pay on delivery?',
@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     q: 'What if something arrives damaged?',
-    a: 'Send us a photo on WhatsApp within 24 hours of delivery and we will refund or replace the item — no long back-and-forth.',
+    a: 'Send us a photo on WhatsApp within 24 hours of delivery and we will refund or replace the item.',
   },
   {
     q: 'I\'m a farmer. How do I start selling?',
@@ -94,7 +94,7 @@ export default function Contact() {
           </nav>
           <h1 className="page-header__title">Talk to us</h1>
           <p className="page-header__subtitle">
-            Order issue, delivery question or want to sell your harvest — a real person reads every message.
+            Questions about an order, delivery or selling on HarvestHub. We reply within one working day.
           </p>
         </div>
       </header>
@@ -120,7 +120,7 @@ export default function Contact() {
             <div className="contact-sent" role="status">
               <span className="contact-sent__icon"><Icon name="check" size={28} strokeWidth={2.5} /></span>
               <h3>Message received</h3>
-              <p>Thanks, {form.name.split(' ')[0]}. We'll get back to you at <strong>{form.contact}</strong> within one working day.</p>
+              <p>We'll reply to <strong>{form.contact}</strong> within one working day.</p>
               <button className="btn btn-outline" onClick={reset}>Send another message</button>
             </div>
           ) : (
@@ -183,7 +183,7 @@ export default function Contact() {
             </p>
             <p className="contact-office__hours">
               <Icon name="clock" size={16} />
-              <span>Pickups: Tue, Thu & Sat, 10am – 4pm</span>
+              <span>Pickups: Tuesday, Thursday and Saturday, 10am to 4pm</span>
             </p>
             <p className="form-hint">Sample address for this demo.</p>
           </div>
@@ -191,7 +191,7 @@ export default function Contact() {
       </div>
 
       <section id="faq" className="container contact-faq" aria-labelledby="faq-heading">
-        <h2 id="faq-heading" className="contact-section-title">Common questions</h2>
+        <h2 id="faq-heading" className="contact-section-title">FAQ</h2>
         <div className="contact-faq__list">
           {FAQS.map(({ q, a }) => (
             <details key={q} className="contact-faq__item">

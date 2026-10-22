@@ -157,59 +157,13 @@
 }
 
 .hero__float-card--1 {
-  top: 0;
-  right: 40px;
-  animation: float 6s ease-in-out infinite;
+  top: 20px;
+  right: 120px;
 }
 
 .hero__float-card--2 {
-  bottom: 10px;
+  bottom: 20px;
   right: 0;
-  animation: float 6s ease-in-out infinite 1.5s;
-}
-
-.hero__float-badge {
-  position: absolute;
-  top: 56%;
-  left: -16px;
-  transform: translateY(-50%);
-  background: #fff;
-  border-radius: var(--radius-lg);
-  padding: var(--space-3) var(--space-4);
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  box-shadow: var(--shadow-xl);
-  animation: float 5s ease-in-out infinite 0.8s;
-  z-index: 2;
-}
-
-.hero__float-badge-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--color-primary-100);
-  color: var(--color-primary-dark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.hero__float-badge-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semi);
-  color: var(--color-text);
-}
-
-.hero__float-badge-sub {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-
-@keyframes float {
-  0%, 100% { translate: 0 0; }
-  50%      { translate: 0 -12px; }
 }
 
 /* ── 2. FACTS BAR ── */
@@ -350,12 +304,7 @@
   box-shadow: var(--shadow-card);
 }
 
-.how-it-works__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-2);
-}
+.how-it-works__top { margin-bottom: var(--space-2); }
 
 .how-it-works__icon-wrap {
   width: 52px;
@@ -366,13 +315,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.how-it-works__step-num {
-  font-family: var(--font-heading);
-  font-size: var(--text-3xl);
-  font-weight: var(--font-black);
-  color: var(--color-border);
 }
 
 .how-it-works__title {
@@ -413,8 +355,6 @@
   gap: var(--space-4);
   color: #fff;
 }
-
-.join-banner__panel .section-label { color: rgba(255, 255, 255, 0.7); margin-bottom: 0; }
 
 .join-banner__panel--buyer {
   background:

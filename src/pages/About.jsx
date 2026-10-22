@@ -9,7 +9,7 @@ import './About.css';
 const BUYER_STEPS = [
   'Browse by product or by farm and add what you need to your cart.',
   'Choose your state and pay by card, bank transfer or on delivery.',
-  'Farmers harvest and pack against your order — not before.',
+  'Farmers harvest and pack your order after you place it.',
   'A rider delivers to your door and calls you on arrival.',
 ];
 
@@ -51,10 +51,10 @@ export default function About() {
       {/* Story */}
       <section className="container section about-story">
         <div className="about-story__text">
-          <h2 className="about-heading">The tomato problem</h2>
+          <h2 className="about-heading">The problem</h2>
           <p>
             A basket of tomatoes picked in Kano passes through several hands before it reaches a kitchen in
-            Lagos — a local aggregator, a transporter, a market union, a wholesaler at Mile 12, then a
+            Lagos: a local aggregator, a transporter, a market union, a wholesaler at Mile 12, then a
             retailer. Each one takes a cut, and the tomatoes spend days in the back of a hot truck.
           </p>
           <p>
@@ -74,10 +74,6 @@ export default function About() {
             className="about-story__image"
             fallback="🧺"
           />
-          <figcaption className="about-story__caption">
-            <strong>90%</strong>
-            <span>of every sale goes to the farmer</span>
-          </figcaption>
         </figure>
       </section>
 
@@ -108,7 +104,7 @@ export default function About() {
 
       {/* What we check */}
       <section className="container section">
-        <h2 className="about-heading text-center">What we check, so you don't have to</h2>
+        <h2 className="about-heading text-center">What we check</h2>
         <div className="about-checks">
           {CHECKS.map(({ icon, title, text }) => (
             <div key={title} className="about-check">
@@ -126,7 +122,7 @@ export default function About() {
           <div>
             <h2 className="about-today__heading">Where we are today</h2>
             <p className="about-today__text">
-              We're early, and we'd rather tell you that than make up big numbers. Here's what's live right now.
+              HarvestHub is a young platform. These are the current numbers.
             </p>
           </div>
           <dl className="about-today__stats">

@@ -46,7 +46,7 @@ function Hero() {
       <div className="hero__content container">
         <div className="hero__text animate-fade-in-up">
           <span className="hero__label">
-            <Icon name="truck" size={15} /> Now delivering across Lagos, Abuja & Ibadan
+            <Icon name="truck" size={15} /> Delivering to Lagos, Abuja and Ibadan
           </span>
 
           <h1 id="hero-heading" className="hero__heading">
@@ -56,12 +56,12 @@ function Hero() {
           </h1>
 
           <p className="hero__sub">
-            Tomatoes from Kano, yams from Benue, eggs from Abeokuta. Order from the farm,
-            skip the market middlemen, and pay a fair price that actually reaches the grower.
+            Order tomatoes from Kano, yams from Benue and eggs from Abeokuta directly from the
+            farms that grow them. Farmers set their own prices and keep 90% of each sale.
           </p>
 
           <div className="hero__actions">
-            <Link to="/products" className="btn btn-secondary btn-lg">Shop fresh produce</Link>
+            <Link to="/products" className="btn btn-secondary btn-lg">Shop produce</Link>
             <Link to="/farmers" className="btn btn-lg btn-light-outline">Meet the farmers</Link>
           </div>
 
@@ -96,13 +96,6 @@ function Hero() {
               </div>
             </div>
           ))}
-          <div className="hero__float-badge">
-            <span className="hero__float-badge-icon"><Icon name="check" size={18} strokeWidth={2.5} /></span>
-            <div>
-              <p className="hero__float-badge-title">Packed the day it ships</p>
-              <p className="hero__float-badge-sub">Not stored in a warehouse</p>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -114,7 +107,7 @@ function FactsBar() {
   const facts = [
     { icon: 'sprout', value: `${FARMERS.length} farms`,          label: `Verified, in ${new Set(FARMERS.map((f) => f.state)).size} states` },
     { icon: 'truck',  value: `From ${naira(LOWEST_DELIVERY_FEE)}`, label: `Delivery · free over ${naira(FREE_DELIVERY_THRESHOLD)}` },
-    { icon: 'clock',  value: '1–4 days',                          label: 'From harvest to your door' },
+    { icon: 'clock',  value: '1 to 4 days',                          label: 'From harvest to your door' },
     { icon: 'cash',   value: 'Pay on delivery',                   label: 'Or card and bank transfer' },
   ];
 
@@ -153,9 +146,8 @@ function FeaturedProducts() {
       <div className="container">
         <div className="section-header section-header--split">
           <div>
-            <span className="section-label">This week</span>
-            <h2 id="products-heading">Fresh from the farms</h2>
-            <p>Harvested to order and priced by the farmers themselves.</p>
+            <h2 id="products-heading">Available this week</h2>
+            <p>Prices are set by the farmers.</p>
           </div>
           <Link to="/products" className="btn btn-outline">
             See all produce <Icon name="arrowRight" size={16} />
@@ -201,9 +193,8 @@ function Origins() {
     <section className="section origins" aria-labelledby="origins-heading">
       <div className="container">
         <div className="section-header">
-          <span className="section-label">Know where it's from</span>
-          <h2 id="origins-heading">Every staple from the state that grows it best</h2>
-          <p>Each product page tells you the farm, the town and the person who grew it.</p>
+          <h2 id="origins-heading">Where our produce comes from</h2>
+          <p>Each product page shows the farm and town it came from.</p>
         </div>
 
         <ul className="origins__grid">
@@ -230,9 +221,9 @@ function Origins() {
 
 /* ── 5. How it works ─────────────────────────────────────── */
 const STEPS = [
-  { icon: 'search', title: 'Pick from real farms', desc: 'Browse by product or by farmer. Every listing shows where it was grown and who grew it.' },
-  { icon: 'basket', title: 'Order before the cut-off', desc: 'Farmers harvest against confirmed orders, so nothing sits in a warehouse waiting for you.' },
-  { icon: 'truck',  title: 'Get it in 1–4 days', desc: 'Same or next day for Lagos greens and eggs; 2–4 days for produce travelling from the north.' },
+  { icon: 'search', title: 'Choose your produce', desc: 'Browse by product or by farmer. Every listing shows where it was grown and who grew it.' },
+  { icon: 'basket', title: 'Place your order', desc: 'Farmers harvest after your order is confirmed, so produce is not stored in a warehouse first.' },
+  { icon: 'truck',  title: 'Receive your delivery', desc: 'Lagos greens and eggs arrive the next day. Produce from the north takes 2 to 4 days.' },
 ];
 
 function HowItWorks() {
@@ -240,16 +231,14 @@ function HowItWorks() {
     <section className="section how-it-works" aria-labelledby="how-heading">
       <div className="container">
         <div className="section-header">
-          <span className="section-label">How it works</span>
-          <h2 id="how-heading">From the farm gate to your gate</h2>
+          <h2 id="how-heading">How ordering works</h2>
         </div>
 
         <ol className="how-it-works__grid">
-          {STEPS.map(({ icon, title, desc }, index) => (
+          {STEPS.map(({ icon, title, desc }) => (
             <li key={title} className="how-it-works__step">
               <div className="how-it-works__top">
                 <span className="how-it-works__icon-wrap"><Icon name={icon} size={24} /></span>
-                <span className="how-it-works__step-num" aria-hidden="true">0{index + 1}</span>
               </div>
               <h3 className="how-it-works__title">{title}</h3>
               <p className="how-it-works__desc">{desc}</p>
@@ -270,9 +259,8 @@ function FarmerSpotlight() {
       <div className="container">
         <div className="section-header section-header--split">
           <div>
-            <span className="section-label">The growers</span>
-            <h2 id="farmers-heading">Meet some of our farmers</h2>
-            <p>Every farm is visited by our team before it can list on HarvestHub.</p>
+            <h2 id="farmers-heading">Our farmers</h2>
+            <p>Our team visits every farm before it can list on HarvestHub.</p>
           </div>
           <Link to="/farmers" className="btn btn-outline">
             All farmers <Icon name="arrowRight" size={16} />
@@ -295,19 +283,17 @@ function JoinBanner() {
     <section className="join-banner" aria-label="Get started">
       <div className="container join-banner__grid">
         <div className="join-banner__panel join-banner__panel--buyer">
-          <span className="section-label">For households & kitchens</span>
-          <h2 className="join-banner__heading">Fill your kitchen for the week</h2>
+          <h2 className="join-banner__heading">Buying for your home or business?</h2>
           <p className="join-banner__sub">
-            Create a free account to save your address, track orders and get 10% off your first delivery.
+            Create a free account to save your address and track your orders. Your first order gets 10% off.
           </p>
           <Link to="/register" className="btn btn-secondary btn-lg">Create a free account</Link>
         </div>
 
         <div className="join-banner__panel join-banner__panel--farmer">
-          <span className="section-label">For farmers</span>
-          <h2 className="join-banner__heading">Sell your harvest at your own price</h2>
+          <h2 className="join-banner__heading">Are you a farmer?</h2>
           <p className="join-banner__sub">
-            List your produce, set your price and get paid into your bank account within 48 hours of delivery.
+            List your produce at your own price. Payment reaches your bank account within 48 hours of delivery.
           </p>
           <Link to="/register?role=farmer" className="btn btn-lg btn-light-outline">Start selling</Link>
         </div>
